@@ -1,0 +1,61 @@
+#include <iostream>
+
+class tochka
+{
+protected:
+	double Ox;
+	double Oy;
+public:
+	tochka() : Ox(0), Oy(0)
+	{
+	}
+	tochka(double x, double y) :Ox(x), Oy(y)
+	{
+
+	}
+	virtual void printcor()
+	{
+		std::cout << "Ox" << Ox << std::endl << "Oy" << Oy << std::endl;
+	}
+
+	virtual ~tochka()
+	{
+	}
+};
+
+class tochkaV3 : public tochka
+{
+protected:
+	double Oz;
+public:
+	tochkaV3() : tochka()
+	{
+	}
+	tochkaV3(double x, double y, double z);
+	tochkaV3(double Oz_) :Oz(Oz_)
+	{
+
+	}
+
+	void printcor()
+	{
+		tochka::printcor();
+		std::cout << "Oz" << Oz << std::endl;
+	}
+
+	~tochkaV3()
+	{
+	}
+
+};
+
+int main()
+{
+double x,y,z; double pos;
+std::cout<<"x="<<"y="<<"z="<<endl;
+std::cin>>x>>y>>z>>endl;
+pos+=x*x+y*y+z*z;
+std::cin>>pos;
+system "pause";
+return 0;
+}
