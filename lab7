@@ -1,0 +1,351 @@
+#include "stdafx.h"
+#include <math.h>
+#include <windows.h>
+enum  width
+{
+	HNULL = 0,
+	THIN = 1,
+	FAT = 3,
+	VERYFAT = 10
+};
+class colors
+{
+public:
+	colors() : _r(0), _g(0), _b(0)
+	{
+
+	}
+	colors(int r, int g, int b) : _r(r), _g(g), _b(b)
+	{
+	}
+	colors & operator = (const colors & A)
+	{
+		if (this != &A)
+		{
+			_r = A._r;
+			_g = A._g;
+			_b = A._b;
+		}
+		else
+		{
+
+		}
+		return *this;
+	}
+	int R()
+	{
+		return _r;
+	}
+	int G()
+	{
+		return _g;
+	}
+	int B()
+	{
+		return _b;
+	}
+private:
+	int _r;
+	int _g;
+	int _b;
+};
+WPARAM wParam;
+UINT message;
+HWND hwnd; 
+MSG msg;
+
+class figure
+{
+public:
+	figure() : _x(0), _y(0), _length(0), _alpha(0), _rgb(250, 10, 128), _width(HNULL)
+	{
+	}
+	figure(int x, int y, int length, width _width1, colors rgb = colors(250, 10, 128), int alpha = 0) :_x(x), _y(y), _length(length), _alpha(alpha), _rgb(rgb), _width(_width1)
+	{
+	}
+	figure & operator= (const figure & A)
+	{
+		if (this != &A)
+		{
+			_x = A._x;
+			_y = A._y;
+			_length = A._length;
+			_alpha = A._alpha;
+			_width = A._width;
+			_rgb = A._rgb;
+		}
+		return *this;
+	}
+	virtual void delet(HDC hDC)
+	{
+		HPEN _pB;
+		_pB = CreatePen(NULL, _width, RGB(255, 255, 255));
+		SelectObject(hDC, _pB);
+		POINT oldpoint;
+		MoveToEx(hDC, _x, _y, &oldpoint);
+		LineTo(hDC, _x + _length*(_alpha), _y + _length*(_alpha));
+	}
+	virtual void print(HDC hDC)
+	{
+		HPEN _pB;
+		_pB = CreatePen(NULL, _width, RGB(_rgb.R(), _rgb.G(), _rgb.B()));
+		SelectObject(hDC, _pB);
+		POINT oldpoint;
+		MoveToEx(hDC, _x, _y, &oldpoint);
+		LineTo(hDC, _x + _length*(_alpha), _y + _length*(_alpha));
+	}
+	void rotate(HDC hDC, int speed = 1)
+	{
+		HPEN _pB;
+		HPEN _pB2;
+		POINT oldpoint;
+		int i = 0;
+		for (i; i < 1000; i += speed)
+		{
+			figure A(_x, _y, _length, _width, colors(255, 255, 255), _alpha + i);
+			A.delet(hDC);
+			A = figure(_x, _y, _length, _width, _rgb, _alpha + i + speed);
+			A.print(hDC);
+			Sleep(200);
+		}
+	}
+	void MOVE(HDC hDC, int speed = 10, int mode = 0)
+	{
+		HPEN _pB;
+		HPEN _pB2;
+		POINT oldpoint;
+		if (mode == 0)
+		{
+			int i = (_x + speed);
+			//L10:
+			for (i; i < 1500; i += speed)
+			{
+				_pB2 = CreatePen(NULL, _width, RGB(255, 255, 255));
+				SelectObject(hDC, _pB2);
+				MoveToEx(hDC, i - speed, _y, &oldpoint);
+				LineTo(hDC, i + _length*(_alpha) - speed, _y + _length*(_alpha));
+				_pB = CreatePen(NULL, _width, RGB(_rgb.R(), _rgb.G(), _rgb.B()));
+				SelectObject(hDC, _pB);
+				MoveToEx(hDC, i, _y, &oldpoint);
+				LineTo(hDC, i + _length*(_alpha), _y + _length*(_alpha));
+				Sleep(200);
+			}
+		}
+		else
+		{
+			int i = (_y + speed);
+			for (i; i < 1000; i += speed)
+			{
+				_pB2 = CreatePen(NULL, _width, RGB(255, 255, 255));
+				SelectObject(hDC, _pB2);
+				MoveToEx(hDC, _x, i - speed, &oldpoint);
+				LineTo(hDC, _x + _length*(_alpha), i + _length*(_alpha) - speed);
+				_pB = CreatePen(NULL, _width, RGB(_rgb.R(), _rgb.G(), _rgb.B()));
+				SelectObject(hDC, _pB);
+				MoveToEx(hDC, _x, i, &oldpoint);
+				LineTo(hDC, _x + _length*(_alpha), i + _length*(_alpha));
+				Sleep(200);
+			}
+		}
+	}
+	int _alpha;
+	int _x;
+	int _y;
+	int _length;
+	width _width;
+	colors _rgb;
+};
+
+class line :public figure
+{
+public:
+	line() :_a(nullptr)
+	{
+	}
+	line(figure*a, int k) : _k(k)
+	{
+		_a = new line[_k];
+		for (int i = 0; i < k; i++)
+		{
+			_a[i] = a[i];
+		}
+	}
+	int center(int k)
+	{
+		int cent = 0;
+		for (int i = 0; i < k; i++)
+		{
+			cent = cent + _a[i]._x + _a[i]._length*(_a[i]._alpha);
+		}
+		return cent / (2 * k);
+	}
+	void MOVES(HDC hDC, int speed = 30, int r = 2)
+	{
+		HPEN _pB;
+		HPEN _pB2;
+		POINT oldpoint;
+		int k = 0;
+		int m = center(r);
+		int *i = new int[_k];
+
+		int s = 0;
+		bool *flag = new bool[_k];
+		int *rek = new int[_k];
+		for (int j = 0; j < _k; j++)
+		{
+			i[j] = _a[j]._x + speed;
+			flag[j] = true;
+			rek[j] = speed;
+		}
+		
+		for (m; m < 3000; m += speed)
+		{
+		l10:
+			if (i[k] > 1500)
+			{
+				i[k] = 0;
+				
+			}
+			while (k < r)
+			{
+
+				_pB2 = CreatePen(NULL, _a[k]._width, RGB(255, 255, 255));
+				SelectObject(hDC, _pB2);
+				MoveToEx(hDC, i[k] - speed, _a[k]._y, &oldpoint);
+				LineTo(hDC, i[k] + _a[k]._length*(_a[k]._alpha) - speed, _a[k]._y + _a[k]._length*(_a[k]._alpha));
+				_pB = CreatePen(NULL, _a[k]._width, RGB(_a[k]._rgb.R(), _a[k]._rgb.G(), _a[k]._rgb.B()));
+				SelectObject(hDC, _pB);
+				MoveToEx(hDC, i[k], _a[k]._y, &oldpoint);
+				LineTo(hDC, i[k] + _a[k]._length*(_a[k]._alpha), _a[k]._y + _length*(_a[k]._alpha));
+				k++;
+				if (k < r)
+					goto l10;
+				Sleep(150);
+			}
+			Sleep(200);
+			k = 0;
+			s += speed;
+			for (int u = 0; u < r; u++)
+			{
+				i[u] = i[u] + speed;
+			}
+		}
+		for (int k = 0; k < r; k++)
+		{
+			_pB2 = CreatePen(NULL, _a[k]._width, RGB(255, 255, 255));
+			SelectObject(hDC, _pB2);
+			MoveToEx(hDC, i[k] - speed, _a[k]._y, &oldpoint);
+			LineTo(hDC, i[k] + _a[k]._length*(_a[k]._alpha) - speed, _a[k]._y + _a[k]._length*(_a[k]._alpha));
+		}
+	}
+	line &operator = (const line &A)
+	{
+		if (this != &A)
+		{
+			delete[]_a;
+			_k = A._k;
+			_a = new line[_k];
+			for (int i = 0; i < _k; i++)
+			{
+				_a[i] = A._a[i];
+			}
+		}
+		return *this;
+	}
+private:
+	line *_a;
+	int _k;
+};
+
+class romb : public figure
+{
+private:
+	int _x;
+	int _y;
+	int _alpha;
+	int _l1;
+	int _l2;
+public:
+	romb() : _x(0), _y(0), _alpha(0), _l1(0), _l2(0), figure()
+	{}
+	romb(int x, int y, int  alpha, int l1, int l2) : _x(x), _y(y), _alpha(alpha), _l1(l1), _l2(l2)
+	{}
+	romb & operator= (const romb & A)
+	{
+		if (this != &A)
+		{
+			_x = A._x;
+			_y = A._y;
+			_l1 = A._l1;
+			_l2 = A._l2;
+			_alpha = A._alpha;
+		}
+		else
+		{
+		}
+		return *this;
+	}
+	void printPARAL(HDC hDC)
+	{
+		HPEN _pB;
+		_pB = CreatePen(NULL, 3, RGB(250, 0, 0));
+		SelectObject(hDC, _pB);
+		POINT oldpoint;
+		figure A(_x, _y, _l1, THIN, colors(250, 0, 0), _alpha);
+		A.print(hDC);
+		A = figure(_x + _l1*(_alpha), _y + _l1*(_alpha), _l2, THIN, colors(250, 0, 0));
+		A.print(hDC);
+		A = figure(_x, _y, _l2, THIN, colors(250, 0, 0));
+		A.print(hDC);
+		A = figure(_x + _l2, _y, _l1, THIN, colors(250, 0, 0), _alpha);
+		A.print(hDC);
+	}
+	figure S1()
+	{
+		figure A(_x, _y, _l1, THIN, colors(250, 0, 0), _alpha);
+		return A;
+	}
+	figure S2()
+	{
+		figure A(_x + _l1*(_alpha), _y + _l1*(_alpha), _l2, THIN, colors(250, 0, 0));
+		return A;
+	}
+	figure S3()
+	{
+		figure A(_x, _y, _l2, THIN, colors(250, 0, 0));
+		return A;
+	}
+	figure S4()
+	{
+		figure A(_x + _l2, _y, _l1, THIN, colors(250, 0, 0), _alpha);
+		return A;
+	}
+	void moveROMB(HDC hDC, int speed = 30)
+	{
+		for (int i = 0; i < 1500; i += speed)
+		{
+			figure A(_x + i, _y, _l1, THIN, colors(255, 255, 255), _alpha);
+			A.delet(hDC);
+			A = figure(_x + i + _l1*(_alpha), _y + _l1*(_alpha), _l2, THIN, colors(255, 255, 255));
+			A.delet(hDC);
+			A = figure(_x + i, _y, _l2, THIN, colors(255, 255, 255));
+			A.delet(hDC);
+			A = figure(_x + i + _l2, _y, _l1, THIN, colors(255, 255, 255), _alpha);
+			A.delet(hDC);
+			A = figure(_x + speed + i, _y, _l1, THIN, colors(250, 0, 0), _alpha);
+			A.print(hDC);
+			A = figure(_x + speed + i + _l1*(_alpha), _y + _l1*(_alpha), _l2, THIN, colors(250, 0, 0));
+			A.print(hDC);
+			A = figure(_x + speed + i, _y, _l2, THIN, colors(250, 0, 0));
+			A.print(hDC);
+			A = figure(_x + speed + i + _l2, _y, _l1, THIN, colors(250, 0, 0), _alpha);
+			A.print(hDC);
+			Sleep(200);
+		}
+	}
+};
+
+
+
+
+
