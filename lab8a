@@ -1,0 +1,233 @@
+#include "stdafx.h";
+#include <iostream>;
+#include <thread>;
+using namespace std;
+void summa1(int N, double sum)
+{
+	int i;
+	for (i = 0; i <= N; i++)
+	{
+		if (i / 2 == 0)
+			sum += i;
+	}
+}
+
+void summa2(int N, double sum)
+{
+	int i;
+	for (i = 0; i <= N; i++)
+	{
+		if (i / 2 != 0)
+			sum += i;
+	}
+}
+
+
+void factor1(int N, double P)
+{
+	int i;
+	for (int i = 1; i <= N; i++)
+	{
+		if (i / 2 == 0)
+			P *= i;
+	}
+}
+
+void factor2(int N, double P)
+{
+	int i;
+	for (int i = 1; i <= N; i++)
+	{
+		if (i / 2 != 0)
+			P *= i;
+	}
+}
+
+void comb1(int N, int K, double P, double A, double B, double res)
+{
+	for (int i = 1; i <= N; i++)
+	if (i / 2 == 0)
+	{
+		P *= i;
+	}
+	for (int i = 1; i <= K; i++)
+	if (i / 2 == 0 && K / 2 == 0)
+	{
+		A *= i;
+	}
+	for (int i = 1; i <= N - K; i++)
+	if (i / 2 == 0 && K / 2 == 0)
+	{
+		B *= i;
+		res = P / (A*B);
+	}
+}
+
+
+
+void comb2(int N, int K, double P, double A, double B, double res)
+{
+	for (int i = 1; i <= N; i++)
+	if (i / 2 != 0)
+	{
+		P *= i;
+	}
+	for (int i = 1; i <= K; i++)
+	if (i / 2 != 0 && K / 2 != 0)
+	{
+		A *= i;
+	}
+	for (int i = 1; i <= N - K; i++)
+	if (i / 2 != 0 && K / 2 != 0)
+	{
+		B *= i;
+		res = P / (A*B);
+	}
+}
+
+void matrix1(int *A,int *B,int *C,int N,int M)
+{
+	int** A = new int*[N];
+	for (int i = 0; i < N; i++)
+	    A[i] = new int[M];
+	int** B = new int*[N];
+	for (int i = 0; i < N; i++)
+		B[i] = new int[M];
+	int** C = new int*[N];
+	for (int i = 0; i < N; i++)
+		C[i] = new int[M];
+
+	for (int i = 0; i < N;i++)
+	for (int j = 0; j < M; i++)
+	if (i / 2 == 0 && j/2==0)
+	{
+		C[i, j] += A[i, j] + B[i, j];
+	}
+}
+
+void matrix2(int *A, int *B, int *C, int N, int M)
+{
+	int** A = new int*[N];
+	for (int i = 0; i < N; i++)
+		A[i] = new int[M];
+	int** B = new int*[N];
+	for (int i = 0; i < N; i++)
+		B[i] = new int[M];
+	int** C = new int*[N];
+	for (int i = 0; i < N; i++)
+		C[i] = new int[M];
+
+	for (int i = 0; i < N; i++)
+	for (int j = 0; j < M; i++)
+	if (i / 2 != 0 && j / 2 != 0)
+	{
+		C[i, j] += A[i, j] + B[i, j];
+	}
+}
+
+
+
+void matrix3(int *A, int *B, int *C, int N, int M)
+{
+	for (int i = 0; i < N; i++)
+	for (int j = 0; j < M; i++)
+	if (i / 2 == 0 )
+	{
+		C[i, j] += A[i, j] + B[i, j];
+	}
+}
+
+
+
+void matrix4(int *A, int *B, int *C, int N, int M)
+{
+	int** A = new int*[N];
+	for (int i = 0; i < N; i++)
+		A[i] = new int[M];
+	int** B = new int*[N];
+	for (int i = 0; i < N; i++)
+		B[i] = new int[M];
+	int** C = new int*[N];
+	for (int i = 0; i < N; i++)
+		C[i] = new int[M];
+
+	for (int i = 0; i < N; i++)
+	for (int j = 0; j < M; i++)
+	if (i / 2 != 0 )
+	{
+		C[i, j] += A[i, j] + B[i, j];
+	}
+}
+
+void matrix5(int *A, int *B, int *C, int N, int M)
+{
+	int** A = new int*[N];
+	for (int i = 0; i < N; i++)
+		A[i] = new int[M];
+	int** B = new int*[N];
+	for (int i = 0; i < N; i++)
+		B[i] = new int[M];
+	int** C = new int*[N];
+	for (int i = 0; i < N; i++)
+		C[i] = new int[M];
+
+	for (int i = 0; i < N; i++)
+	for (int j = 0; j < M; i++)
+	if (j / 2 == 0)
+	{
+		C[i, j] += A[i, j] + B[i, j];
+	}
+}
+
+
+
+void matrix6(int *A, int *B, int *C, int N, int M)
+{
+	int** A = new int*[N];
+	for (int i = 0; i < N; i++)
+		A[i] = new int[M];
+	int** B = new int*[N];
+	for (int i = 0; i < N; i++)
+		B[i] = new int[M];
+	int** C = new int*[N];
+	for (int i = 0; i < N; i++)
+		C[i] = new int[M];
+
+	for (int i = 0; i < N; i++)
+	for (int j = 0; j < M; i++)
+	if (j / 2 != 0)
+	{
+		C[i, j] += A[i, j] + B[i, j];
+	}
+}
+
+
+
+int main()
+{
+	std::thread th1(summa1);
+	std::thread th2(summa2);
+	    th1.join();
+		th2.join();
+	std::thread th21(factor1);
+	std::thread th22(factor2);
+		th21.join();
+		th22.join();
+	std::thread th31(comb1);
+	std::thread th32(comb2);
+		th31.join();
+		th32.join();
+	std::thread th41(matrix1);
+	std::thread th42(matrix2);
+	std::thread th43(matrix3);
+	std::thread th44(matrix4);
+	std::thread th45(matrix5);
+	std::thread th46(matrix6);
+	    th41.join();
+	    th42.join();
+		th43.join();
+		th44.join();
+		th45.join();
+		th46.join();
+		
+}
